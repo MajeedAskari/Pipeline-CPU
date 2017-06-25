@@ -5,7 +5,7 @@ module WBControl(
   );
 
 
- always@(opcode,funct) begin
+ always@(opcode) begin
   case (opcode)
     5'b0 : // R-Type
 	begin
@@ -54,14 +54,7 @@ module WBControl(
 	end
     6'b000101 : // bne
 	begin
-	  RegDst = 0;
-	  Jump = 0;
-	  Branch = 1;
-	  MemRead = 0;
 	  MemtoReg = 1;
-	  aluo=0001; //sub
-	  MemWrite = 0;
-	  AluSrc = 0;
 	  RegWrite = 0;
 	end
     endcase

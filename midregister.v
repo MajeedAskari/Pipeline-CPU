@@ -1,8 +1,6 @@
 module ifidReg(input clk, input [31:0] inst, input [31:0] pc4in, output reg [31:0] instout, output reg [31:0] pc4out);
 
 
-reg	[31:0] instruction, pc4;
-
 initial begin
 	instout = 32'h00000020;
 end
@@ -15,12 +13,10 @@ endmodule
 
 
 module idexReg(
-	input clk, input [31:0] inst, input [31:0] pc4in, input [31:0] rd1, input [31:0] rd2, input [31:0] se,
-	output reg [31:0] instout, output reg [31:0] pc4out, output reg [31:0] rd1out, output reg [31:0] rd2out, output reg [31:0] seout
+	input clk, input [31:0] inst, input [31:0] pc4in, input [31:0] rd1, input [31:0] rd2, input [31:0] se1, input [31:0] se2,
+	output reg [31:0] instout, output reg [31:0] pc4out, output reg [31:0] rd1out, output reg [31:0] rd2out, output reg [31:0] se1out,
+	output reg [31:0] se2out
 	);
-
-
-reg	[31:0] instruction, pc4;
 
 initial begin
 	instout = 32'h00000020;
@@ -31,20 +27,18 @@ always@(posedge clk) begin
 	pc4out = pc4in;
 	rd1out = rd1;
 	rd2out = rd2;
-	seout = se;
+	se1out = se1;
+	se2out = se2;
 end	 
 endmodule	
 
 
 
 module exmemReg(
-	input clk, input [31:0] inst, input [31:0] aluresult, input [31:0] rd2, input [4:0] regDst, input Zero, input [31:0] adder1res,
-	output reg [31:0] instout, output reg [31:0] aluresultout, output reg [31:0] rd2out,
+	input clk, input [31:0] inst, input [31:0] pc4in, input [31:0] aluresult, input [31:0] rd2, input [4:0] regDst, input Zero, input [31:0] adder1res,
+	output reg [31:0] instout, output reg [31:0] aluresultout, output reg [31:0] rd2out, output reg [31:0] pc4out,
 	output reg [4:0] regDstout, output reg Zeroout, output reg [31:0] adder1resout,
 	);
-
-
-reg	[31:0] instruction, pc4;
 
 initial begin
 	instout = 32'h00000020;
@@ -52,6 +46,7 @@ end
 
 always@(posedge clk) begin
 	instout = inst;
+	pc4out = pc4in;
 	aluresultout = aluresult;
 	rd2out = rd2;
 	regDstout = regDst;
@@ -65,9 +60,6 @@ module memwbReg(
 	output reg [31:0] instout, output reg [31:0] aluresultout, output reg [31:0] readdataout,
 	output reg [4:0] regDstout,
 	);
-
-
-reg	[31:0] instruction, pc4;
 
 initial begin
 	instout = 32'h00000020;
