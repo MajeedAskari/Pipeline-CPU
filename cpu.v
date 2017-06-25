@@ -35,7 +35,7 @@ mux32 mux4(mux3TOmux4, jump_address, Jump, mux4TOpc);
 ifidReg ifid(clk, instruction, pc4, instructionFetch, pc4Fetch);	
 
 //ID	
-RegFile regfile(clk,instructionFetch [25:21], instructionFetch [20:16], mux1TOregfile, regDstMEM, RegWrite, readdata1TOalu, readdata2TOmux2);
+RegFile regfile(clk,instructionFetch [25:21], instructionFetch [20:16], regDstMEM, mux1TOregfile, RegWrite, readdata1TOalu, readdata2TOmux2);
 ShiftLeft26 shift1(instructionFetch[25:0],shift1TOmux4);
 SignExtend signextend(instructionFetch [15:0],signextendTOshiftleft2);
 //ID
@@ -77,13 +77,12 @@ memwbReg memwb(clk, instructionEX, aluresultEX, memory_readdata, regDstEX,
 
 //WB
 mux32 mux5(aluresultMEM, readdataMEM, MemtoReg, mux5TOwritedata);
+WBControl wbcontrol(instructionMEM [31:26] , MemtoReg, RegWrite);
 //WB
 
 
 
 
 
-
-
-Control ctrl(instruction[31:26], instruction[5:0], RegDst, Jump, Branch, MemRead, MemtoReg, aluControlOut, MemWrite, AluSrc, RegWrite, bne);//done
+//Control ctrl(instruction[31:26], instruction[5:0], RegDst, Jump, Branch, MemRead, MemtoReg, aluControlOut, MemWrite, AluSrc, RegWrite, bne);//done
 endmodule
