@@ -13,9 +13,9 @@ endmodule
 
 
 module idexReg(
-	input clk, input [31:0] inst, input [31:0] pc4in, input [31:0] rd1, input [31:0] rd2, input [31:0] se1, input [31:0] se2,
+	input clk, input [31:0] inst, input [31:0] pc4in, input [31:0] rd1, input [31:0] rd2, input [31:0] se1, input [27:0] sl1,
 	output reg [31:0] instout, output reg [31:0] pc4out, output reg [31:0] rd1out, output reg [31:0] rd2out, output reg [31:0] se1out,
-	output reg [31:0] se2out
+	output reg [27:0] sl1out
 	);
 
 initial begin
@@ -28,7 +28,7 @@ always@(posedge clk) begin
 	rd1out = rd1;
 	rd2out = rd2;
 	se1out = se1;
-	se2out = se2;
+	sl1out = sl1;
 end	 
 endmodule	
 
