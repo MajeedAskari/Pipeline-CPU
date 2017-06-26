@@ -9,8 +9,20 @@ module IMemBank(input memread, input [7:0] addr, output reg [31:0] readdata);
 		  address = addr >> 2;
 	  end
 	  
-  initial begin
-	mem_array[0] = 32'h200f0008;/*
+  initial begin	 
+	mem_array[0] = 32'h20030009;
+	mem_array[1] = 32'h20040008;
+	mem_array[2] = 32'h2005000a;
+	mem_array[3] = 32'h2006000c;
+	mem_array[4] = 32'hac030000;
+	mem_array[5] = 32'hac040002;
+	mem_array[6] = 32'h0083f82a;
+	mem_array[7] = 32'h00c31820;
+	mem_array[8] = 32'h00a43022;
+	mem_array[9] = 32'h8c1d0000;
+	mem_array[10] = 32'hac1c0002;
+	  /*
+	mem_array[0] = 32'h200f0008;
 	mem_array[1] = 32'hac0f0000;
 	mem_array[2] = 32'h200f0017;
 	mem_array[3] = 32'hac0f0001;
