@@ -10,9 +10,9 @@ module Control(
 if(opcode == 6'b000101)
 bne = 1'b1;
 else bne = 1'b0;
-
+	
   case (opcode)
-    5'b0 : // R-Type
+    6'b0 : // R-Type
 	begin
 	  RegDst = 1;
 	  Jump = 0;

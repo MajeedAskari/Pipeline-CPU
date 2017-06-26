@@ -11,7 +11,14 @@ bne = 1'b1;
 else bne = 1'b0;
 
   case (opcode)
-    5'b0 : // R-Type
+	6'b111111 : // NOP
+	begin
+	  Branch = 0;
+	  MemRead = 0;
+	  MemWrite = 0;
+	end
+	
+    6'b0 : // R-Type
 	begin
 	  Branch = 0;
 	  MemRead = 0;

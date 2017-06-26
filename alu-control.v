@@ -8,10 +8,18 @@ module ALUControl(
 
 
  always@(opcode,funct) begin
-if(opcode == 6'b000101)
 
   case (opcode)
-    5'b0 : // R-Type
+	  
+	6'b111111 : // NOP
+	begin
+	  RegDst = 0;
+	  Jump = 0;
+	  aluo = 0000; //add
+	  AluSrc = 0;
+	end
+	
+    6'b0 : // R-Type
 	begin
 	  RegDst = 1;
 	  Jump = 0;
@@ -28,6 +36,7 @@ if(opcode == 6'b000101)
 	begin
 	  RegDst = 0;
 	  Jump = 0;
+	  AluSrc = 1;
 	end
     6'b000010 : // j
 	begin

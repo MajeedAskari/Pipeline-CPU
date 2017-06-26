@@ -2,15 +2,15 @@ module CPU();
 
 wire [31:0] mux4TOpc, pcTOadder1, instruction, pc4, adder2TOmux3, readdata1TOalu, readdata2TOmux2,jump_address,
 	signextendTOshiftleft2, mux2TOalu, shiftleft2TOadder2, mux3TOmux4,aluresult, memory_readdata, mux5TOwritedata;
-wire [27:0] shift1TOmux4;
-wire [4:0] mux1TOregfile;
+wire [27:0] shift1TOmux4, sl1Dec;
+wire [4:0] mux1TOregfile, regDstEX, regDstMEM;
 wire [3:0] aluControlOut;
-wire RegDst, Jump, Branch, MemRead, MemtoReg, MemWrite, AluSrc, RegWrite, andTOmux3, aluzero, lt, gt, bne;
+wire RegDst, Jump, Branch, MemRead, MemtoReg, MemWrite, AluSrc, RegWrite, andTOmux3, aluzero, lt, gt, bne, ZeroEX;
 
 wire [31:0] instructionFetch, pc4Fetch,
-	instructionDec, pc4Dec, rd1Dec, rd2Dec, seDec, sl1Dec,
-	instructionEX, pc4EX, aluresultEX, rd2EX, regDstEX, ZeroEX, adder2resEX,
-	instructionMEM,	aluresultMEM, readdataMEM, regDstMEM; 
+	instructionDec, pc4Dec, rd1Dec, rd2Dec, seDec,
+	instructionEX, pc4EX, aluresultEX, rd2EX, adder2resEX,
+	instructionMEM,	aluresultMEM, readdataMEM; 
 
 reg clk;
 initial
@@ -35,7 +35,7 @@ mux32 mux4(mux3TOmux4, jump_address, Jump, mux4TOpc);
 ifidReg ifid(clk, instruction, pc4, instructionFetch, pc4Fetch);	
 
 //ID	
-RegFile regfile(clk,instructionFetch [25:21], instructionFetch [20:16], regDstMEM, mux1TOregfile, RegWrite, readdata1TOalu, readdata2TOmux2);
+RegFile regfile(clk,instructionFetch [25:21], instructionFetch [20:16], regDstMEM, mux5TOwritedata, RegWrite, readdata1TOalu, readdata2TOmux2);
 ShiftLeft26 shift1(instructionFetch[25:0],shift1TOmux4);
 SignExtend signextend(instructionFetch [15:0],signextendTOshiftleft2);
 //ID
@@ -50,8 +50,8 @@ idexReg idex(clk, instructionFetch, pc4Fetch, readdata1TOalu, readdata2TOmux2, s
 Adder adder2(pc4Dec, shiftleft2TOadder2,adder2TOmux3);
 ShiftLeft32 shift2(seDec, shiftleft2TOadder2);
 ALU alu(rd1Dec, mux2TOalu, aluControlOut, aluresult, aluzero, lt, gt);
-mux32 mux2(rd2Dec,signextendTOshiftleft2, AluSrc, mux2TOalu);
-mux5 mux1(instruction [20:16],instruction [15:11], RegDst,mux1TOregfile);
+mux32 mux2(rd2Dec, seDec, AluSrc, mux2TOalu);
+mux5 mux1(instructionDec [20:16],instructionDec [15:11], RegDst,mux1TOregfile);
 
 ALUControl aluctrl(instructionDec [31:26], instructionDec[5:0], RegDst, Jump, aluControlOut, AluSrc );
 

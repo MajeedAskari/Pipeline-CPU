@@ -7,7 +7,13 @@ module WBControl(
 
  always@(opcode) begin
   case (opcode)
-    5'b0 : // R-Type
+	6'b111111 : // NOP
+	begin
+	  MemtoReg = 0;
+	  RegWrite = 0;
+	end
+	
+    6'b0 : // R-Type
 	begin
 	  MemtoReg = 0;
 	  RegWrite = 1;

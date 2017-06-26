@@ -2,7 +2,7 @@ module ifidReg(input clk, input [31:0] inst, input [31:0] pc4in, output reg [31:
 
 
 initial begin
-	instout = 32'h00000020;
+	instout = 32'hff000000;
 end
 
 always@(posedge clk) begin
@@ -19,7 +19,7 @@ module idexReg(
 	);
 
 initial begin
-	instout = 32'h00000020;
+	instout = 32'hff000000;
 end
 
 always@(posedge clk) begin
@@ -41,7 +41,7 @@ module exmemReg(
 	);
 
 initial begin
-	instout = 32'h00000020;
+	instout = 32'hff000000;
 end
 
 always@(posedge clk) begin
@@ -62,7 +62,7 @@ module memwbReg(
 	);
 
 initial begin
-	instout = 32'h00000020;
+	instout = 32'hff000000;
 end
 
 always@(posedge clk) begin
