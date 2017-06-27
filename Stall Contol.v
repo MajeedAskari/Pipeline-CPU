@@ -1,31 +1,42 @@
-module StallControl (input [31:0] instructionFetch, instructionDEC, instructionEX, output reg pcenable, idexNOP); 
-wire validDestEX, validDestMEM, validRs, validRt;	
-wire [4:0] destEX, destMEM, rs, rt;
+module StallControl (input [31:0] instructionFetch, instructionDEC, instructionEX, instructionWB, output reg pcenable, idifenable, idexNOP); 
+wire validDestEX, validDestMEM, validDestWB, validRs, validRt;	
+wire [4:0] destEX, destMEM, destWB, rs, rt;
 
 destination destEXstage(instructionDEC, destEX, validDestEX);	
 destination destMEMstage(instructionEX, destMEM, validDestMEM);
+destination destWBstage(instructionWB, destWB, validDestWB);
+source src(instructionFetch, rs, validRs, rt, validRt);		   
 
-source src(instructionFetch, [4:0] rs, validRs, rt, validRt);
-	
-always@(instructionFetch, instructionDEC, instructionEX)
+initial
 	begin
-		if ((rs == destEX && validDestEX = 1'b1 && validRs = 1'b1) ||(rt == destEX && validDestEX = 1'b1 && validRt = 1'b1))
+		pcenable = 1;
+		idifenable = 1;
+		idexNOP = 0;
+	end
+	
+	
+always@(instructionFetch, instructionDEC, instructionEX, instructionWB)
+	#20 begin
+		if ((validDestEX == 1'b1 && validRs == 1'b1 && rs == destEX) || (validDestEX == 1'b1 && validRt == 1'b1 && rt == destEX)
+			|| (validDestMEM == 1'b1 && validRs == 1'b1 && rs == destMEM) || (validDestMEM == 1'b1 && validRt == 1'b1 && rt == destMEM)
+			|| (validDestWB == 1'b1 && validRs == 1'b1 && rs == destWB) || (validDestWB == 1'b1 && validRt == 1'b1 && rt == destWB))
 		begin
 			pcenable = 0;
+			idifenable = 0;
 			idexNOP = 1;
-		end
-		if ((rs == destMEM && validDestMEM = 1'b1 && validRs = 1'b1) ||(rt == destMEM && validDestMEM = 1'b1 && validRt = 1'b1))
+	end
+	else
 		begin
-			pcenable = 0;
-			idexNOP = 1;
+			pcenable = 1;
+			idifenable = 1;
+			idexNOP = 0;	
 		end
-			
    end
 endmodule
 
   
   module destination(input [31:0] instruction, output reg [4:0] rd, output reg valid);
-	always@(instruction)
+	always@(*)
 	begin	
  		case (instruction [31:26])
 		6'b111111 : // NOP
@@ -100,7 +111,8 @@ endmodule
      case (instruction [31:26])
 	  6'b111111 : // NOP
 	 begin
-	 	valid = 0;
+	 	validrs = 0;
+		validrt = 0;
 	 end
 	  
      6'b0 : // R-Type
