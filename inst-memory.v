@@ -33,7 +33,7 @@ module IMemBank(input memread, input [7:0] addr, output reg [31:0] readdata);
 	mem_array[7] = 32'h8c020000;
 	mem_array[8] = 32'h0000f020;
 	mem_array[9] = 32'h201d000a;
-	mem_array[10] = 32'h03bee022; /*
+	mem_array[10] = 32'h03bee022;
 	mem_array[11] = 32'h13800009;
 	mem_array[12] = 32'h8fd40000;
 	mem_array[13] = 32'h0034d82a;
@@ -43,7 +43,7 @@ module IMemBank(input memread, input [7:0] addr, output reg [31:0] readdata);
 	mem_array[17] = 32'h13600001;
 	mem_array[18] = 32'h02801020;
 	mem_array[19] = 32'h23de0001; 
-	mem_array[20] = 32'h0800000a; */
+	mem_array[20] = 32'h0800000a;
   end
  
   always@(memread, address, mem_array[address])
