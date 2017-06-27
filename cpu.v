@@ -5,7 +5,7 @@ wire [31:0] mux4TOpc, pcTOadder1, instruction, pc4, adder2TOmux3, readdata1TOalu
 wire [27:0] shift1TOmux4, sl1Dec;
 wire [4:0] mux1TOregfile, regDstEX, regDstMEM;
 wire [3:0] aluControlOut;
-wire RegDst, Jump, Branch, MemRead, MemtoReg, MemWrite, AluSrc, RegWrite, andTOmux3, aluzero, lt, gt, bne, ZeroEX;
+wire RegDst, Jump, Branch, MemRead, MemtoReg, MemWrite, AluSrc, RegWrite, andTOmux3, aluzero, lt, gt, bne, ZeroEX, idexNOP, pcenable, idefenable;
 
 wire [31:0] instructionFetch, pc4Fetch,
 	instructionDec, pc4Dec, rd1Dec, rd2Dec, seDec,
@@ -24,7 +24,7 @@ assign jump_address = {pc4Dec[31:28],sl1Dec};
 
 
 //IF
-PC pc(mux4TOpc,pcTOadder1,clk);														
+PC pc(pcenable, mux4TOpc,pcTOadder1,clk);														
 IMemBank instmemory( 1'b1, pcTOadder1[7:0],instruction);				   
 Adder adder1(pcTOadder1,32'b00000000000000000000000000000100,pc4);
 mux32 mux3(pc4,adder2resEX, andTOmux3, mux3TOmux4);
@@ -32,7 +32,7 @@ mux32 mux4(mux3TOmux4, jump_address, Jump, mux4TOpc);
 //IF
 
 // IF/ID	
-ifidReg ifid(clk, instruction, pc4, instructionFetch, pc4Fetch);	
+ifidReg ifid(idefenable, clk, instruction, pc4, instructionFetch, pc4Fetch);	
 
 //ID	
 RegFile regfile(clk,instructionFetch [25:21], instructionFetch [20:16], regDstMEM, mux5TOwritedata, RegWrite, readdata1TOalu, readdata2TOmux2);
@@ -41,7 +41,7 @@ SignExtend signextend(instructionFetch [15:0],signextendTOshiftleft2);
 //ID
 
 //	ID/EX
-idexReg idex(clk, instructionFetch, pc4Fetch, readdata1TOalu, readdata2TOmux2, signextendTOshiftleft2, shift1TOmux4,
+idexReg idex(idexNOP ,clk, instructionFetch, pc4Fetch, readdata1TOalu, readdata2TOmux2, signextendTOshiftleft2, shift1TOmux4,
 	instructionDec, pc4Dec, rd1Dec, rd2Dec, seDec,
 	sl1Dec
 	);
@@ -81,8 +81,7 @@ WBControl wbcontrol(instructionMEM [31:26] , MemtoReg, RegWrite);
 //WB
 
 
+StallControl stall(instructionFetch, instructionDec, instructionEX, instructionMEM, pcenable, idefenable, idexNOP);
 
 
-
-//Control ctrl(instruction[31:26], instruction[5:0], RegDst, Jump, Branch, MemRead, MemtoReg, aluControlOut, MemWrite, AluSrc, RegWrite, bne);//done
 endmodule
