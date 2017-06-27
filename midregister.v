@@ -1,4 +1,4 @@
-module ifidReg(input clk, input [31:0] inst, input [31:0] pc4in, output reg [31:0] instout, output reg [31:0] pc4out);
+module ifidReg(input enable, input clk, input [31:0] inst, input [31:0] pc4in, output reg [31:0] instout, output reg [31:0] pc4out);
 
 
 initial begin
@@ -12,7 +12,7 @@ end
 endmodule					
 
 
-module idexReg(
+module idexReg(input enable, 
 	input clk, input [31:0] inst, input [31:0] pc4in, input [31:0] rd1, input [31:0] rd2, input [31:0] se1, input [27:0] sl1,
 	output reg [31:0] instout, output reg [31:0] pc4out, output reg [31:0] rd1out, output reg [31:0] rd2out, output reg [31:0] se1out,
 	output reg [27:0] sl1out
