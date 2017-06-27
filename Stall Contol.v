@@ -1,4 +1,7 @@
-module StallControl (input [31:0] instructionFetch, instructionDEC, instructionEX, instructionWB, output reg pcenable, idifenable, idexNOP); 
+module StallControl (input s, input [31:0] instructionFetch, instructionDEC, instructionEX, instructionWB,
+	output reg pcenable, idifenable, idexNOP, ifidNOP, exmemNOP);
+	
+	
 wire validDestEX, validDestMEM, validDestWB, validRs, validRt;	
 wire [4:0] destEX, destMEM, destWB, rs, rt;
 
@@ -12,11 +15,14 @@ initial
 		pcenable = 1;
 		idifenable = 1;
 		idexNOP = 0;
+		ifidNOP = 0;
+		exmemNOP = 0;
 	end
+
 	
-	
-always@(instructionFetch, instructionDEC, instructionEX, instructionWB)
+	always@(instructionFetch, instructionDEC, instructionEX, instructionWB)
 	#20 begin
+		// if data hazard
 		if ((validDestEX == 1'b1 && validRs == 1'b1 && rs == destEX) || (validDestEX == 1'b1 && validRt == 1'b1 && rt == destEX)
 			|| (validDestMEM == 1'b1 && validRs == 1'b1 && rs == destMEM) || (validDestMEM == 1'b1 && validRt == 1'b1 && rt == destMEM)
 			|| (validDestWB == 1'b1 && validRs == 1'b1 && rs == destWB) || (validDestWB == 1'b1 && validRt == 1'b1 && rt == destWB))
@@ -24,15 +30,36 @@ always@(instructionFetch, instructionDEC, instructionEX, instructionWB)
 			pcenable = 0;
 			idifenable = 0;
 			idexNOP = 1;
-	end
-	else
+			ifidNOP = 0;
+		end
+		
+		else if(instructionFetch [31:26] == 6'b000010 || instructionDEC	[31:26] == 6'b000010) // jump stall
+			begin
+				ifidNOP = 1;
+			end	
+			
+		else if((instructionEX [31:26] == 6'b000100 || instructionEX [31:26] == 6'b000101) && s == 1)
+			begin
+				ifidNOP = 1;
+				idexNOP = 1;
+				exmemNOP = 1;
+			end
+		else
 		begin
 			pcenable = 1;
 			idifenable = 1;
-			idexNOP = 0;	
-		end
+			idexNOP = 0;
+			ifidNOP = 0;
+			exmemNOP = 0;
+		end	
+		
    end
 endmodule
+
+
+
+
+
 
   
   module destination(input [31:0] instruction, output reg [4:0] rd, output reg valid);
@@ -64,7 +91,7 @@ endmodule
  		6'b001101 : // ori
  		begin
  			rd = instruction [20:16];
- 			valid =1;
+ 			valid = 1;
  		end
 		 
   		6'b001100 : // andi
@@ -88,7 +115,7 @@ endmodule
   		6'b100011 : // lw
  		begin
   			rd = instruction [20:16];
-  			valid =1;
+  			valid = 1;
   		end
 		  
  		6'b000100 : // beq

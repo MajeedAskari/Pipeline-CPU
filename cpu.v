@@ -5,7 +5,7 @@ wire [31:0] mux4TOpc, pcTOadder1, instruction, pc4, adder2TOmux3, readdata1TOalu
 wire [27:0] shift1TOmux4, sl1Dec;
 wire [4:0] mux1TOregfile, regDstEX, regDstMEM;
 wire [3:0] aluControlOut;
-wire RegDst, Jump, Branch, MemRead, MemtoReg, MemWrite, AluSrc, RegWrite, andTOmux3, aluzero, lt, gt, bne, ZeroEX, idexNOP, pcenable, idefenable;
+wire RegDst, Jump, Branch, MemRead, MemtoReg, MemWrite, AluSrc, RegWrite, andTOmux3, aluzero, lt, gt, bne, ZeroEX, idexNOP, pcenable, ifidenable, ifidNOP;
 
 wire [31:0] instructionFetch, pc4Fetch,
 	instructionDec, pc4Dec, rd1Dec, rd2Dec, seDec,
@@ -32,7 +32,7 @@ mux32 mux4(mux3TOmux4, jump_address, Jump, mux4TOpc);
 //IF
 
 // IF/ID	
-ifidReg ifid(idefenable, clk, instruction, pc4, instructionFetch, pc4Fetch);	
+ifidReg ifid(ifidNOP, ifidenable, clk, instruction, pc4, instructionFetch, pc4Fetch);	
 
 //ID	
 RegFile regfile(clk,instructionFetch [25:21], instructionFetch [20:16], regDstMEM, mux5TOwritedata, RegWrite, readdata1TOalu, readdata2TOmux2);
@@ -58,7 +58,7 @@ ALUControl aluctrl(instructionDec [31:26], instructionDec[5:0], RegDst, Jump, al
 //EX  
 
 //	EX/MEM
-exmemReg exmem(clk, instructionDec, pc4Dec, aluresult, rd2Dec, mux1TOregfile, aluzero, adder2TOmux3,
+exmemReg exmem(exmemNOP, clk, instructionDec, pc4Dec, aluresult, rd2Dec, mux1TOregfile, aluzero, adder2TOmux3,
 	instructionEX, aluresultEX, rd2EX, pc4EX,
 	regDstEX, ZeroEX, adder2resEX
 	);
@@ -81,7 +81,7 @@ WBControl wbcontrol(instructionMEM [31:26] , MemtoReg, RegWrite);
 //WB
 
 
-StallControl stall(instructionFetch, instructionDec, instructionEX, instructionMEM, pcenable, idefenable, idexNOP);
+StallControl stall(andTOmux3, instructionFetch, instructionDec, instructionEX, instructionMEM, pcenable, ifidenable, idexNOP, ifidNOP, exmemNOP);
 
 
 endmodule
