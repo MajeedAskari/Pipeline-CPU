@@ -23,26 +23,27 @@ initial
 	always@(instructionFetch, instructionDEC, instructionEX, instructionWB)
 	#20 begin
 		// if data hazard
-		if ((validDestEX == 1'b1 && validRs == 1'b1 && rs == destEX) || (validDestEX == 1'b1 && validRt == 1'b1 && rt == destEX)
-			|| (validDestMEM == 1'b1 && validRs == 1'b1 && rs == destMEM) || (validDestMEM == 1'b1 && validRt == 1'b1 && rt == destMEM)
-			|| (validDestWB == 1'b1 && validRs == 1'b1 && rs == destWB) || (validDestWB == 1'b1 && validRt == 1'b1 && rt == destWB))
+		if((instructionEX [31:26] == 6'b000100 || instructionEX [31:26] == 6'b000101) && s == 1)
 		begin
-			pcenable = 0;
-			idifenable = 0;
-			idexNOP = 1;
-			ifidNOP = 0;
-		end
-		
-		else if(instructionFetch [31:26] == 6'b000010 || instructionDEC	[31:26] == 6'b000010) // jump stall
-			begin
-				ifidNOP = 1;
-			end	
-			
-		else if((instructionEX [31:26] == 6'b000100 || instructionEX [31:26] == 6'b000101) && s == 1)
-			begin
 				ifidNOP = 1;
 				idexNOP = 1;
 				exmemNOP = 1;
+				pcenable = 1;
+		end
+		else if(instructionFetch [31:26] == 6'b000010 || instructionDEC	[31:26] == 6'b000010) // jump stall
+			begin
+				ifidNOP = 1;
+				pcenable = 1;
+			end	
+			
+		else if((validDestEX == 1'b1 && validRs == 1'b1 && rs == destEX) || (validDestEX == 1'b1 && validRt == 1'b1 && rt == destEX)
+			|| (validDestMEM == 1'b1 && validRs == 1'b1 && rs == destMEM) || (validDestMEM == 1'b1 && validRt == 1'b1 && rt == destMEM)
+			|| (validDestWB == 1'b1 && validRs == 1'b1 && rs == destWB) || (validDestWB == 1'b1 && validRt == 1'b1 && rt == destWB))
+			begin
+				pcenable = 0;
+				idifenable = 0;
+				idexNOP = 1;
+				ifidNOP = 0;
 			end
 		else
 		begin
