@@ -22,7 +22,7 @@ initial
 	
 	always@(instructionFetch, instructionDEC, instructionEX, instructionWB)
 	#20 begin
-		// if data hazard
+		// if branch taken:
 		if((instructionEX [31:26] == 6'b000100 || instructionEX [31:26] == 6'b000101) && s == 1)
 		begin
 				ifidNOP = 1;
